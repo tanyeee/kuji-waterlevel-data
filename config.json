@@ -1,0 +1,11 @@
+{
+  "sourceBaseUrl": "https://raw.githubusercontent.com/tanyeee/kuji-waterlevel/main/data/stations",
+  "stations": [
+    {"id": "kuji-ohashi", "name": "久慈大橋"},
+    {"id": "sakakibashi", "name": "榊橋"},
+    {"id": "hinuma-bashi", "name": "涸沼橋"},
+    {"id": "minato-ohashi", "name": "湊大橋"},
+    {"id": "suifu-bashi", "name": "水府橋"},
+    {"id": "kunita-ohashi", "name": "国田大橋"}
+  ]
+}
