@@ -1,0 +1,69 @@
+name: Publish live water levels without Git commits
+
+on:
+  workflow_dispatch:
+    inputs:
+      bootstrap:
+        description: "Only for first deployment before the live Pages files exist"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publish-live-water-levels
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout archive repository
+        uses: actions/checkout@v4
+      - name: Checkout old viewer scripts and bootstrap data (shallow)
+        uses: actions/checkout@v4
+        with:
+          repository: tanyeee/kuji-waterlevel
+          path: viewer
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install source dependencies
+        run: python -m pip install -r viewer/requirements.txt
+      - name: Restore last published rolling state
+        env:
+          BOOTSTRAP: ${{ inputs.bootstrap }}
+        run: |
+          if [ "$BOOTSTRAP" = "true" ]; then
+            python scripts/live_site.py prepare --viewer viewer --bootstrap
+          else
+            python scripts/live_site.py prepare --viewer viewer
+          fi
+      - name: Fetch current 10-minute observations
+        working-directory: viewer
+        run: |
+          python scripts/update_recent_10min_from_kawabou.py --keep-hours 168
+          python scripts/update_recent_from_kawabou_files.py --keep-10min-hours 168 --keep-hourly-days 45
+      - name: Validate and package small live site
+        run: python scripts/live_site.py package --viewer viewer
+      - name: Upload Pages artifact (one-day retention)
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy live data
+        id: deployment
+        uses: actions/deploy-pages@v4
