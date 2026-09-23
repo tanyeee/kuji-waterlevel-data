@@ -1,4 +1,4 @@
-name: Sync hourly fallback
+name: Sync hourly river water levels
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Checkout the viewer's recent hourly snapshots
+      - name: Checkout the old viewer's fetch script and station config
         uses: actions/checkout@v4
         with:
           repository: tanyeee/kuji-waterlevel
@@ -28,6 +28,11 @@ jobs:
           path: viewer
           fetch-depth: 1
           persist-credentials: false
+      - name: Install source dependencies
+        run: python -m pip install -r viewer/requirements.txt
+      - name: Fetch current hourly observations
+        working-directory: viewer
+        run: python scripts/update_recent_from_monthly_page.py
       - name: Merge recent hourly readings into annual archives
         run: >-
           python scripts/archive_water_levels.py --skip-recent
