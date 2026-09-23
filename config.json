@@ -1,11 +1,19 @@
 {
   "sourceBaseUrl": "https://tanyeee.github.io/kuji-waterlevel-data/live/stations",
   "stations": [
-    {"id": "kuji-ohashi", "name": "久慈大橋"},
+    {"id": "tomioka-bashi", "name": "富岡橋"},
+    {"id": "nukada", "name": "幸久橋"},
+    {"id": "sakakibashi-ue", "name": "榊橋上"},
     {"id": "sakakibashi", "name": "榊橋"},
+    {"id": "kuji-ohashi", "name": "久慈大橋"},
+    {"id": "kihatsu", "name": "里川 機初"},
+    {"id": "tsuneibashi", "name": "山田川 常井橋"},
+    {"id": "takahashi", "name": "高橋"},
+    {"id": "shimoishizaki", "name": "下石崎"},
     {"id": "hinuma-bashi", "name": "涸沼橋"},
     {"id": "minato-ohashi", "name": "湊大橋"},
     {"id": "suifu-bashi", "name": "水府橋"},
-    {"id": "kunita-ohashi", "name": "国田大橋"}
+    {"id": "kunita-ohashi", "name": "国田大橋"},
+    {"id": "nakagawa-ohashi", "name": "那珂川大橋"}
   ]
 }
