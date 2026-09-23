@@ -7,6 +7,8 @@ on:
         description: "Only for first deployment before the live Pages files exist"
         type: boolean
         default: false
+  schedule:
+    - cron: "9,19,29,39,49,59 * * * *"
 
 permissions:
   contents: read
