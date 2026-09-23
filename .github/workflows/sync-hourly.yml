@@ -2,6 +2,8 @@ name: Sync hourly fallback
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "35 * * * *"
 
 permissions:
   contents: write
@@ -18,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Checkout the viewer's compact station data snapshot
+      - name: Checkout the viewer's recent hourly snapshots
         uses: actions/checkout@v4
         with:
           repository: tanyeee/kuji-waterlevel
@@ -26,8 +28,11 @@ jobs:
           path: viewer
           fetch-depth: 1
           persist-credentials: false
-      - name: Sync hourly fallback
-        run: python scripts/archive_water_levels.py --skip-recent --source-base viewer/data/stations
+      - name: Merge recent hourly readings into annual archives
+        run: >-
+          python scripts/archive_water_levels.py --skip-recent
+          --hourly-config viewer/config/stations.json
+          --source-base viewer/data/stations
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
