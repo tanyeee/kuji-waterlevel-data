@@ -1,5 +1,5 @@
 {
-  "sourceBaseUrl": "https://raw.githubusercontent.com/tanyeee/kuji-waterlevel/main/data/stations",
+  "sourceBaseUrl": "https://tanyeee.github.io/kuji-waterlevel-data/live/stations",
   "stations": [
     {"id": "kuji-ohashi", "name": "久慈大橋"},
     {"id": "sakakibashi", "name": "榊橋"},

@@ -19,4 +19,4 @@
 
 `publish-live.yml` は旧ビューアの更新スクリプトを浅い一時チェックアウトで実行し、14地点の直近7日データだけを GitHub Pages の成果物にして配信します。公開先は `https://tanyeee.github.io/kuji-waterlevel-data/live/stations/STATION/recent_10min.json` です。成果物は約1 MB、保持期間は1日で、10分ごとのJSON更新をGit履歴に積みません。
 
-初回だけ `workflow_dispatch` の `bootstrap=true` で旧リポジトリの最新ファイルを種にします。以後は公開中のPagesファイルを毎回読み戻して直近7日分を保持し、取得失敗時には古いファイルを再配信せずワークフローを失敗させます。旧ビューアと日別アーカイブの参照先は、Pages の初回公開と連続更新を確認した後に切り替えます。
+初回だけ `workflow_dispatch` の `bootstrap=true` で旧リポジトリの最新ファイルを種にします。以後は公開中のPagesファイルを毎回読み戻して直近7日分を保持し、取得失敗時には古いファイルを再配信せずワークフローを失敗させます。初回公開と通常モードの連続更新を確認したため、日別アーカイブの取得先はこのPages配信へ切り替えています。
