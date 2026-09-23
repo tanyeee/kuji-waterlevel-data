@@ -94,47 +94,71 @@ def year_minutes(year: int, step_minutes: int) -> int:
     return ((date(year + 1, 1, 1) - date(year, 1, 1)).days * 24 * 60) // step_minutes
 
 
+def load_hourly_archive(path: Path, station_id: str, year: int) -> tuple[list[float | None], dict[str, str]]:
+    if not path.exists():
+        return [None] * year_minutes(year, 60), {}
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    values = payload.get("values")
+    expected_count = year_minutes(year, 60)
+    if (payload.get("schemaVersion") != 1 or payload.get("station") != station_id or
+            payload.get("year") != year or payload.get("stepMinutes") != 60 or
+            not isinstance(values, list) or len(values) != expected_count):
+        raise ValueError(f"Invalid hourly archive: {path}")
+
+    flags = payload.get("flags", {})
+    if not isinstance(flags, dict):
+        raise ValueError(f"Invalid hourly archive flags: {path}")
+    return list(values), {str(index): str(flag) for index, flag in flags.items() if flag}
+
+
 def archive_hourly(config: dict[str, Any], source_base: str, output: Path) -> int:
     changed = 0
     for station in config["stations"]:
-        merged: dict[str, dict[str, Any]] = {}
-        for filename in ("historical_hourly.json", "recent_hourly.json"):
-            payload = read_json(source_location(source_base, station["id"], filename))
-            for record in payload.get("records", []):
-                timestamp = record.get("timestamp")
-                if isinstance(timestamp, str):
-                    merged[timestamp] = record
-        years = sorted({int(timestamp[:4]) for timestamp in merged if len(timestamp) >= 4})
-        for year in years:
-            values: list[float | None] = [None] * year_minutes(year, 60)
-            flags: dict[str, str] = {}
-            start = datetime(year, 1, 1)
-            for timestamp, record in merged.items():
-                if not timestamp.startswith(f"{year:04d}-"):
-                    continue
-                try:
-                    observed = datetime.fromisoformat(timestamp)
-                except ValueError:
-                    continue
-                index = int((observed - start).total_seconds() // 3600)
-                if not 0 <= index < len(values):
-                    continue
-                flag = str(record.get("flag") or "")
-                value = record.get("value")
-                values[index] = value if isinstance(value, (int, float)) and flag not in INVALID_FLAGS else None
-                if flag:
-                    flags[str(index)] = flag
+        station_id = station["id"]
+        payload = read_json(source_location(source_base, station_id, "recent_hourly.json"))
+        records = payload.get("records")
+        if not isinstance(records, list):
+            raise ValueError(f"Missing hourly records for {station_id}")
+
+        yearly_data: dict[int, tuple[list[float | None], dict[str, str]]] = {}
+        for record in records:
+            timestamp = record.get("timestamp") if isinstance(record, dict) else None
+            if not isinstance(timestamp, str):
+                continue
+            try:
+                observed = datetime.fromisoformat(timestamp)
+            except ValueError:
+                continue
+            year = observed.year
+            if year not in yearly_data:
+                destination = output / "hourly" / station_id / f"{year}.json"
+                yearly_data[year] = load_hourly_archive(destination, station_id, year)
+
+            values, flags = yearly_data[year]
+            index = int((observed - datetime(year, 1, 1)).total_seconds() // 3600)
+            if not 0 <= index < len(values):
+                continue
+            flag = str(record.get("flag") or "")
+            value = record.get("value")
+            values[index] = value if isinstance(value, (int, float)) and flag not in INVALID_FLAGS else None
+            if flag:
+                flags[str(index)] = flag
+            else:
+                flags.pop(str(index), None)
+
+        for year, (values, flags) in yearly_data.items():
             payload = {
                 "schemaVersion": 1,
                 "year": year,
                 "stepMinutes": 60,
-                "station": station["id"],
+                "station": station_id,
                 "values": values,
                 "source": "river.go.jp via tanyeee/kuji-waterlevel",
             }
             if flags:
                 payload["flags"] = flags
-            destination = output / "hourly" / station["id"] / f"{year}.json"
+            destination = output / "hourly" / station_id / f"{year}.json"
             changed += int(write_json_if_changed(destination, payload))
     return changed
 
@@ -158,6 +182,7 @@ def update_manifest(config: dict[str, Any], output: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="config.json")
+    parser.add_argument("--hourly-config", help="Hourly station list; defaults to --config")
     parser.add_argument("--source-base")
     parser.add_argument("--output", default="data")
     parser.add_argument("--delay-days", type=int, default=2)
@@ -166,11 +191,12 @@ def main() -> None:
     parser.add_argument("--skip-hourly", action="store_true")
     args = parser.parse_args()
     config = read_json(args.config)
+    hourly_config = read_json(args.hourly_config) if args.hourly_config else config
     source_base = args.source_base or config["sourceBaseUrl"]
     output = Path(args.output)
     today = date.fromisoformat(args.today) if args.today else datetime.now(JST).date()
     recent_changes = 0 if args.skip_recent else archive_recent(config, source_base, output, args.delay_days, today)
-    hourly_changes = 0 if args.skip_hourly else archive_hourly(config, source_base, output)
+    hourly_changes = 0 if args.skip_hourly else archive_hourly(hourly_config, source_base, output)
     update_manifest(config, output)
     print(f"archived daily files: {recent_changes}; updated hourly files: {hourly_changes}")
 
