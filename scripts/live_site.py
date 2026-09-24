@@ -55,29 +55,48 @@ def read_live(url: str, *, bootstrap: bool) -> dict | None:
 def prepare(viewer: Path, state_path: Path, live_base: str, bootstrap: bool) -> dict[str, str]:
     latest_by_station = {}
     for station_id, path in stations(viewer):
-        old = json.loads(path.read_text(encoding="utf-8"))
-        old_records = checked_records(old, f"old/{station_id}")
+        # fetcher/data starts empty on every run (nothing is committed there), so the
+        # local file normally will not exist yet: treat that as "no local records"
+        # rather than failing, and fall back to Pages as the source of truth.
+        if path.exists():
+            old = json.loads(path.read_text(encoding="utf-8"))
+            old_records = checked_records(old, f"old/{station_id}")
+        else:
+            old = None
+            old_records = []
+
         live_url = f"{live_base.rstrip('/')}/{station_id}/recent_10min.json"
         live = read_live(live_url, bootstrap=bootstrap)
         if not bootstrap and live is None:
             raise ValueError(f"Live state missing for {station_id}")
         if live:
             live_records = checked_records(live, f"live/{station_id}")
-            old_code = old.get("meta", {}).get("station_code")
-            live_code = live.get("meta", {}).get("station_code")
-            if old_code != live_code:
-                raise ValueError(f"Station code mismatch for {station_id}")
+            if old is not None:
+                old_code = old.get("meta", {}).get("station_code")
+                live_code = live.get("meta", {}).get("station_code")
+                if old_code != live_code:
+                    raise ValueError(f"Station code mismatch for {station_id}")
         else:
             live_records = []
-        # Existing live data wins on duplicate timestamps. The stale Git copy
-        # remains a bootstrap fallback and is never pushed back into Git.
+
+        # Existing live data wins on duplicate timestamps. The local copy is only
+        # a bootstrap fallback (or absent) and is never pushed back into Git.
         merged = {record["timestamp"]: record for record in old_records}
         merged.update({record["timestamp"]: record for record in live_records})
+        if not merged:
+            # Bootstrap and neither a local file nor Pages has this station yet.
+            # Leave it for the fetch step to create from scratch; record an empty
+            # sentinel so package()'s regression check has a key to compare against.
+            latest_by_station[station_id] = ""
+            continue
+
         records = [merged[key] for key in sorted(merged)]
         latest_by_station[station_id] = records[-1]["timestamp"]
-        payload = {**old, "meta": {**old.get("meta", {}), "record_count": len(records),
+        template = old if old is not None else live
+        payload = {**template, "meta": {**template.get("meta", {}), "record_count": len(records),
                                     "dataset_start": records[0]["timestamp"],
                                     "dataset_end": records[-1]["timestamp"]}, "records": records}
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(json.dumps(latest_by_station, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

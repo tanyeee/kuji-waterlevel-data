@@ -25,34 +25,28 @@ jobs:
     steps:
       - name: Checkout archive repository
         uses: actions/checkout@v4
-      - name: Checkout old viewer scripts and bootstrap data (shallow)
-        uses: actions/checkout@v4
-        with:
-          repository: tanyeee/kuji-waterlevel
-          path: viewer
-          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install source dependencies
-        run: python -m pip install -r viewer/requirements.txt
+        run: python -m pip install -r fetcher/requirements.txt
       - name: Restore last published rolling state
         env:
           BOOTSTRAP: ${{ inputs.bootstrap }}
         run: |
           if [ "$BOOTSTRAP" = "true" ]; then
-            python scripts/live_site.py prepare --viewer viewer --bootstrap
+            python scripts/live_site.py prepare --viewer fetcher --bootstrap
           else
-            python scripts/live_site.py prepare --viewer viewer
+            python scripts/live_site.py prepare --viewer fetcher
           fi
       - name: Fetch current 10-minute observations
-        working-directory: viewer
+        working-directory: fetcher
         run: |
           python scripts/update_recent_10min_from_kawabou.py --keep-hours 168
           python scripts/update_recent_from_kawabou_files.py --keep-10min-hours 168 --keep-hourly-days 45
       - name: Validate and package small live site
-        run: python scripts/live_site.py package --viewer viewer
+        run: python scripts/live_site.py package --viewer fetcher
       - name: Upload Pages artifact (one-day retention)
         uses: actions/upload-pages-artifact@v4
         with:
@@ -61,6 +55,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

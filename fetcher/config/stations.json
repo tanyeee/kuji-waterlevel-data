@@ -1,0 +1,327 @@
+{
+  "default_station": "nukada",
+  "default_river": "kuji",
+  "display_groups": [
+    {
+      "label": "久慈川",
+      "station_ids": ["tomioka-bashi", "nukada", "sakakibashi-ue"]
+    },
+    {
+      "label": "里川",
+      "station_ids": ["kihatsu"]
+    },
+    {
+      "label": "山田川",
+      "station_ids": ["tsuneibashi"]
+    },
+    {
+      "label": "涸沼川",
+      "station_ids": ["takahashi", "shimoishizaki"]
+    },
+    {
+      "label": "那珂川",
+      "station_ids": ["nakagawa-ohashi"]
+    }
+  ],
+  "rivers": [
+    {
+      "id": "kuji",
+      "name": "久慈川水系",
+      "station_ids": ["tomioka-bashi", "nukada", "sakakibashi-ue", "sakakibashi", "kuji-ohashi", "kihatsu", "tsuneibashi"]
+    },
+    {
+      "id": "hinuma-nakagawa",
+      "name": "涸沼・那珂川水系",
+      "station_ids": ["takahashi", "shimoishizaki", "hinuma-bashi", "minato-ohashi", "suifu-bashi", "kunita-ohashi", "nakagawa-ohashi"]
+    }
+  ],
+  "stations": [
+    {
+      "id": "tomioka-bashi",
+      "name": "富岡橋",
+      "observation_name": "富岡橋",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/tomioka-bashi",
+      "hourly": {
+        "station_id": "303011283322020"
+      },
+      "ten_min": {
+        "station_id": "303011283322020"
+      },
+      "flood_levels": {
+        "flood_caution": 2.5,
+        "evacuation_judgment": 2.9,
+        "flood_danger": 3.5,
+        "flood_occurrence": 4.6
+      },
+      "location": {}
+    },
+    {
+      "id": "nukada",
+      "name": "幸久橋",
+      "selector_name": "幸久橋（額田）",
+      "observation_name": "額田",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/nukada",
+      "hourly": {
+        "station_id": "303011283322030"
+      },
+      "ten_min": {
+        "station_id": "303011283322030",
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "7"
+      },
+      "flood_levels": {
+        "flood_caution": 4.8,
+        "evacuation_judgment": 5.3,
+        "flood_danger": 5.9,
+        "flood_occurrence": 7.1
+      },
+      "flood_levels_basis": {
+        "type": "estimated",
+        "label": "富岡橋換算目安",
+        "source_station_id": "tomioka-bashi",
+        "event_count": 18,
+        "period_start": "2016-01-01",
+        "period_end": "2026-09-07",
+        "peak_lag_hours": "2〜4時間程度",
+        "regression": "額田ピーク水位 = 1.107 × 富岡橋ピーク水位 + 2.049 m",
+        "correlation": 0.984,
+        "rmse_m": 0.24
+      },
+      "location": {
+        "lat": 36.5038889,
+        "lon": 140.5466325203125
+      }
+    },
+    {
+      "id": "sakakibashi-ue",
+      "name": "榊橋上",
+      "observation_name": "榊橋上",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/sakakibashi-ue",
+      "reference_stats_enabled": false,
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "3"
+      },
+      "location": {
+        "lat": 36.4963889,
+        "lon": 140.5544444
+      }
+    },
+    {
+      "id": "sakakibashi",
+      "name": "榊橋",
+      "observation_name": "榊橋",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/sakakibashi",
+      "hourly": {
+        "station_id": "303011283322050"
+      },
+      "ten_min": {
+        "station_id": "303011283322050",
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "4"
+      },
+      "location": {
+        "lat": 36.495,
+        "lon": 140.5949658203125
+      }
+    },
+    {
+      "id": "kuji-ohashi",
+      "name": "久慈大橋",
+      "observation_name": "久慈大橋",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/kuji-ohashi",
+      "hourly": {
+        "station_id": "303011283322060"
+      },
+      "ten_min": {
+        "station_id": "303011283322060",
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "8"
+      },
+      "location": {
+        "lat": 36.4808333,
+        "lon": 140.62178851015625
+      }
+    },
+    {
+      "id": "kihatsu",
+      "name": "里川 機初",
+      "observation_name": "機初",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/kihatsu",
+      "hourly": {
+        "station_id": "303011283322080"
+      },
+      "ten_min": {
+        "station_id": "303011283322080"
+      },
+      "flood_levels": {
+        "flood_caution": 3.0,
+        "evacuation_judgment": 3.0,
+        "flood_danger": 3.1,
+        "flood_occurrence": 3.8
+      },
+      "location": {}
+    },
+    {
+      "id": "tsuneibashi",
+      "name": "山田川 常井橋",
+      "observation_name": "常井橋",
+      "river_id": "kuji",
+      "river_name": "久慈川水系",
+      "data_dir": "data/stations/tsuneibashi",
+      "hourly": {
+        "station_id": "303011283322070"
+      },
+      "ten_min": {
+        "station_id": "303011283322070"
+      },
+      "flood_levels": {
+        "flood_caution": 3.0,
+        "evacuation_judgment": 3.5,
+        "flood_danger": 3.8,
+        "flood_occurrence": 4.3
+      },
+      "location": {}
+    },
+    {
+      "id": "takahashi",
+      "name": "高橋",
+      "observation_name": "高橋",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/takahashi",
+      "reference_stats_enabled": false,
+      "kawabou": {
+        "ofc_cd": "2049",
+        "itmknd_cd": "4",
+        "obs_cd": "1"
+      },
+      "location": {
+        "lat": 36.2902778,
+        "lon": 140.4238889
+      }
+    },
+    {
+      "id": "shimoishizaki",
+      "name": "下石崎",
+      "observation_name": "下石崎",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/shimoishizaki",
+      "reference_stats_enabled": false,
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "23"
+      },
+      "level_zones": [
+        {
+          "from": 1.9,
+          "label": "護岸浸水目安",
+          "note": "下石崎では1.90 m以上を護岸浸水範囲として表示します。国土交通省の防災基準水位ではありません。"
+        }
+      ],
+      "location": {
+        "lat": 36.2847222,
+        "lon": 140.5144444
+      }
+    },
+    {
+      "id": "hinuma-bashi",
+      "name": "涸沼橋",
+      "observation_name": "涸沼橋",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/hinuma-bashi",
+      "hourly": {
+        "station_id": "303021283322110"
+      },
+      "ten_min": {
+        "station_id": "303021283322110"
+      },
+      "location": {}
+    },
+    {
+      "id": "minato-ohashi",
+      "name": "湊大橋",
+      "observation_name": "湊大橋",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/minato-ohashi",
+      "hourly": {
+        "station_id": "303021283322010"
+      },
+      "ten_min": {
+        "station_id": "303021283322010"
+      },
+      "location": {}
+    },
+    {
+      "id": "suifu-bashi",
+      "name": "水府橋",
+      "observation_name": "水府橋",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/suifu-bashi",
+      "hourly": {
+        "station_id": "303021283322020"
+      },
+      "ten_min": {
+        "station_id": "303021283322020"
+      },
+      "location": {}
+    },
+    {
+      "id": "kunita-ohashi",
+      "name": "国田大橋",
+      "observation_name": "下国井",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/kunita-ohashi",
+      "hourly": {
+        "station_id": "303021283322030"
+      },
+      "ten_min": {
+        "station_id": "303021283322030"
+      },
+      "location": {}
+    },
+    {
+      "id": "nakagawa-ohashi",
+      "name": "那珂川大橋",
+      "observation_name": "野口",
+      "river_id": "hinuma-nakagawa",
+      "river_name": "涸沼・那珂川水系",
+      "data_dir": "data/stations/nakagawa-ohashi",
+      "hourly": {
+        "station_id": "303021283322040"
+      },
+      "ten_min": {
+        "station_id": "303021283322040"
+      },
+      "flood_levels": {
+        "flood_caution": 3.5,
+        "evacuation_judgment": 4.1,
+        "flood_danger": 4.5,
+        "flood_occurrence": 5.8
+      },
+      "location": {}
+    }
+  ]
+}

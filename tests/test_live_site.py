@@ -1,4 +1,5 @@
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -53,6 +54,38 @@ class LiveSiteTest(unittest.TestCase):
         with patch("scripts.live_site.read_live", return_value=None):
             with self.assertRaises(ValueError):
                 prepare(self.viewer, self.state, "https://example.org/live", False)
+
+    def test_prepare_without_local_file_seeds_from_live(self):
+        # fetcher/data starts empty every run: the station directory (not just the
+        # file) may not exist yet when prepare() runs first.
+        shutil.rmtree(self.station_file.parent)
+        live = payload(("2026-09-22T09:00", 3.0), ("2026-09-22T09:10", 3.1))
+        with patch("scripts.live_site.read_live", return_value=live):
+            result = prepare(self.viewer, self.state, "https://example.org/live", False)
+        self.assertEqual(result, {"example": "2026-09-22T09:10"})
+        written = json.loads(self.station_file.read_text())
+        self.assertEqual([record["value"] for record in written["records"]], [3.0, 3.1])
+        self.assertEqual(written["meta"]["station_code"], "123")
+
+    def test_bootstrap_without_local_file_or_live_leaves_empty_sentinel(self):
+        shutil.rmtree(self.station_file.parent)
+        with patch("scripts.live_site.read_live", return_value=None):
+            result = prepare(self.viewer, self.state, "https://example.org/live", True)
+        self.assertEqual(result, {"example": ""})
+        self.assertEqual(json.loads(self.state.read_text()), {"example": ""})
+        self.assertFalse(self.station_file.exists())
+
+    def test_package_after_bootstrap_sentinel_accepts_fetch_created_file(self):
+        # prepare() left nothing on disk for this station; simulate the fetch step
+        # creating it from scratch afterwards, as the workflow does between
+        # prepare and package.
+        shutil.rmtree(self.station_file.parent)
+        with patch("scripts.live_site.read_live", return_value=None):
+            prepare(self.viewer, self.state, "https://example.org/live", True)
+        self.station_file.parent.mkdir(parents=True)
+        self.station_file.write_text(json.dumps(payload(("2026-09-22T09:00", 1.0))))
+        output = self.root / "site"
+        self.assertEqual(package(self.viewer, self.state, output), {"example": "2026-09-22T09:00"})
 
     def test_unsorted_source_rejected(self):
         with self.assertRaises(ValueError):
