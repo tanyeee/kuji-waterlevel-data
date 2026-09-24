@@ -1,6 +1,6 @@
 # 久慈川・那珂川水系 10分水位アーカイブ
 
-[`kuji-waterlevel`](https://github.com/tanyeee/kuji-waterlevel) が公開する国土交通省の河川水位を、長期参照用のコンパクトなJSONとして保存します。
+国土交通省の河川水位を取得し、[`kuji-waterlevel`](https://github.com/tanyeee/kuji-waterlevel)（茨城県河川水位ビューア）や tide-graph が使う最新値と長期アーカイブを、コンパクトなJSONとして配信・保存します。
 
 - `data/10min/YYYY/MM/YYYY-MM-DD.json`: 48時間の補正待ち後に確定する日別10分値。作成後は原則変更しません。
 - `data/hourly/STATION/YYYY.json`: 2016年以降の1時間値。10分アーカイブ開始前のフォールバックです。
@@ -15,7 +15,7 @@
 
 ## 取得スクリプトの取得元と3地点の1時間値復旧（2026-09-24）
 
-`fetcher/` 配下の取得スクリプト（`update_recent_10min_from_kawabou.py`、`update_recent_from_kawabou_files.py`、`update_recent_from_monthly_page.py`）と `config/stations.json`、`requirements.txt` は [`tanyeee/kuji-waterlevel`](https://github.com/tanyeee/kuji-waterlevel) の `main` ブランチのコミット `4927588344b7d63932e35915587edbe1e538bffd`（2026-09-24）から複製した固定コピーです。以後の更新はこのリポジトリで個別に管理し、旧リポジトリを都度チェックアウトすることはありません。実行時の出力（`fetcher/data/`）はGit管理していません。
+`fetcher/` 配下の取得スクリプト（`update_recent_10min_from_kawabou.py`、`update_recent_from_kawabou_files.py`、`update_recent_from_monthly_page.py`）と `config/stations.json`、`requirements.txt` は旧ビューアリポジトリの `main` ブランチのコミット `4927588344b7d63932e35915587edbe1e538bffd`（2026-09-24）から複製した固定コピーです。旧ビューアリポジトリは2026-09-24に `tanyeee/kuji-waterlevel-legacy`（非公開）へ改名・退避し、同名の `tanyeee/kuji-waterlevel` はビューアだけの新しいリポジトリとして作り直しました。以後の更新はこのリポジトリで個別に管理し、旧リポジトリを都度チェックアウトすることはありません。実行時の出力（`fetcher/data/`）はGit管理していません。
 
 榊橋上・高橋・下石崎の1時間値（川の防災情報経由）は、以前は `publish-live.yml` に相当する旧リポジトリ側のジョブの副産物としてのみ旧リポジトリへコミットされていました。旧リポジトリがそのコミットを停止したため、`data/hourly/{sakakibashi-ue,takahashi,shimoishizaki}/2026.json` は2026-09-23 20:00 JSTで更新が止まっていました。`sync-hourly.yml` がこの3地点分も `update_recent_from_kawabou_files.py` で直接取得するようにして復旧しています。
 
@@ -23,7 +23,7 @@
 
 ## 旧Git履歴からの救出（2026-07-14〜2026-09-14）
 
-旧リポジトリの7日間ローリングファイルを4日間隔の16コミットから読み出し、欠けていた63日分の10分値を復元しました。使用したコミットと日別・地点別の有効値件数は [`reports/backfill-10min-2026.json`](reports/backfill-10min-2026.json) に記録しています。既存の日別ファイルは上書きしていません。
+旧リポジトリ（現在は非公開の `tanyeee/kuji-waterlevel-legacy`。記録ファイル内のリポジトリ名とコミットはこちらを指します）の7日間ローリングファイルを4日間隔の16コミットから読み出し、欠けていた63日分の10分値を復元しました。使用したコミットと日別・地点別の有効値件数は [`reports/backfill-10min-2026.json`](reports/backfill-10min-2026.json) に記録しています。既存の日別ファイルは上書きしていません。
 
 欠測は補間せず `null` のまま残しています。特に9月1〜2日は久慈大橋・涸沼橋・湊大橋・国田大橋の欠測が多く、保存済み毎時データにも対応する欠測があることを確認しました。両データを照合すると、10分値の00分値は毎時データの「1時間前の記録」と一致します（比較できた全地点・全時点で一致）。そのため同時刻どうしを比較して補完・修正することはしていません。
 
