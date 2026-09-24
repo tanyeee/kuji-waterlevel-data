@@ -20,25 +20,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Checkout the old viewer's fetch script and station config
-        uses: actions/checkout@v4
-        with:
-          repository: tanyeee/kuji-waterlevel
-          ref: main
-          path: viewer
-          fetch-depth: 1
-          persist-credentials: false
       - name: Install source dependencies
-        run: python -m pip install -r viewer/requirements.txt
-      - name: Fetch current hourly observations
-        working-directory: viewer
+        run: python -m pip install -r fetcher/requirements.txt
+      - name: Fetch current hourly observations from the monthly table
+        working-directory: fetcher
         run: python scripts/update_recent_from_monthly_page.py
+      - name: Fetch current hourly observations for Kawabou-only stations
+        working-directory: fetcher
+        run: python scripts/update_recent_from_kawabou_files.py --keep-10min-hours 168 --keep-hourly-days 45
       - name: Merge recent hourly readings into annual archives
         run: >-
           python scripts/archive_water_levels.py --skip-recent
-          --hourly-config viewer/config/stations.json
-          --source-base viewer/data/stations
+          --hourly-config fetcher/config/stations.json
+          --source-base fetcher/data/stations
       - name: Commit changes
+        if: github.ref == 'refs/heads/main'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
