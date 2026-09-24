@@ -44,9 +44,7 @@ Worker のコードは Cloudflare ダッシュボードで編集しています�
 
 ## ロールバック
 
-以前の Worker は旧リポジトリ `tanyeee/kuji-waterlevel` の `update_recent_10min.yml` を起動し、そこから `publish-live.yml` を中継していました。新しい経路に問題があれば、次の手順で戻します。
+以前の Worker は旧ビューアリポジトリ（現在は非公開の `tanyeee/kuji-waterlevel-legacy`）の `update_recent_10min.yml` を起動して中継していましたが、2026-09-24 に中継用のトークンと workflow を削除したため、その経路にはもう戻せません。問題があるときは次の方法で戻します。
 
-1. ダッシュボードのデプロイ履歴（Deployments）から直前のバージョンに戻す。または、置き換え前に保存した旧コードを貼って Deploy する。
-2. 追加した `35 * * * *` と `25 18 * * *` の Cron Trigger を削除する。
-
-旧経路は Cloudflare の Secret `GITHUB_TOKEN` と旧リポジトリの Actions secret `DATA_REPO_DISPATCH_TOKEN` を使います。新経路の安定を確認するまで、どちらも削除しないでください。
+1. Worker のコードの問題: ダッシュボードのデプロイ履歴（Deployments）から直前のバージョンに戻すか、このディレクトリの `worker.js` を貼り直して Deploy する。
+2. workflow の問題: このリポジトリで該当するPRを revert する（Worker は `main` の workflow を起動するため、revert がそのまま反映されます）。
