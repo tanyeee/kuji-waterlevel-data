@@ -48,7 +48,10 @@ def station_year_files(data_root: Path, station_id: str) -> list[Path]:
 
 
 def write_json(path: Path, payload: dict) -> None:
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    # 既存の data/hourly/*.json (archive_water_levels.write_json_if_changed) と同じ
+    # コンパクト書式に合わせ、差分を最小化する。
+    encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+    path.write_text(encoded, encoding="utf-8")
 
 
 def shift_station(data_root: Path, station_id: str) -> tuple[str, dict]:
