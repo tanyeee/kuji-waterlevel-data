@@ -44,9 +44,9 @@ class BackfillTest(unittest.TestCase):
                 self.assertEqual(sum(value is not None for value in values), info["stationValidCounts"][station])
                 for hour in range(24):
                     value = values[hour * 6]
-                    earlier_hourly = hourly[station][base_hour + hour - 1]
-                    if value is not None and earlier_hourly is not None:
-                        self.assertEqual(value, earlier_hourly)
+                    same_hour_hourly = hourly[station][base_hour + hour]
+                    if value is not None and same_hour_hourly is not None:
+                        self.assertEqual(value, same_hour_hourly)
                         compared += 1
         self.assertGreater(compared, 8000)
 
