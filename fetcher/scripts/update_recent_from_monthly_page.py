@@ -76,6 +76,7 @@ def parse_monthly_dat(text: str) -> list[Record]:
             continue
         row = next(csv.reader([raw_line]))
         day = row[0].strip()
+        day_date = date(*(int(part) for part in day.split("/")))
         for hour in range(24):
             value_idx = 1 + hour * 2
             flag_idx = value_idx + 1
@@ -83,7 +84,15 @@ def parse_monthly_dat(text: str) -> list[Record]:
                 break
             value_text = row[value_idx].strip()
             flag = row[flag_idx].strip() if flag_idx < len(row) else ""
-            ts = f"{day}T{hour:02d}:00".replace("/", "-")
+            # 列は1時(=hour 0)〜24時(=hour 23)の正時水位。24時は翌日0:00を指す。
+            column_hour = hour + 1
+            if column_hour == 24:
+                record_date = day_date + timedelta(days=1)
+                record_hour = 0
+            else:
+                record_date = day_date
+                record_hour = column_hour
+            ts = f"{record_date.isoformat()}T{record_hour:02d}:00"
             if value_text in {"", "$", "#", "-"}:
                 records.append(Record(timestamp=ts, value=None, flag=flag or value_text))
                 continue
