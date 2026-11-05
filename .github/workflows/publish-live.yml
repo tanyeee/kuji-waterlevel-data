@@ -8,10 +8,10 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: "9,19,29,39,49,59 * * * *"
+    - cron: "17 * * * *"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -40,13 +40,28 @@ jobs:
           else
             python scripts/live_site.py prepare --viewer fetcher
           fi
-      - name: Fetch current 10-minute observations
+      - name: Fetch observations from Kawabou (once per hour, 1 request per station)
         working-directory: fetcher
         run: |
-          python scripts/update_recent_10min_from_kawabou.py --keep-hours 168
           python scripts/update_recent_from_kawabou_files.py --keep-10min-hours 168 --keep-hourly-days 45
       - name: Validate and package small live site
         run: python scripts/live_site.py package --viewer fetcher
+      - name: Merge recent hourly readings into annual archives
+        run: >-
+          python scripts/archive_water_levels.py --skip-recent
+          --hourly-config fetcher/config/stations.json
+          --source-base fetcher/data/stations
+      - name: Commit hourly archive changes
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if ! git diff --cached --quiet; then
+            git commit -m "Sync hourly river water levels"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push
+          fi
       - name: Upload Pages artifact (one-day retention)
         uses: actions/upload-pages-artifact@v4
         with:

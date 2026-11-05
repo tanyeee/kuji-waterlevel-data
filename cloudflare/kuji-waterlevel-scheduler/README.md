@@ -4,10 +4,11 @@ Cloudflare の Cron Trigger から、このリポジトリの GitHub Actions を
 
 ## Cron Trigger と起動する workflow
 
+**現在 Cron は停止中。再開する場合は毎時1本だけ登録**（`publish-live.yml` を起動する1本のみ。取得元は川の防災情報で、毎時1回を超える頻度で取得しないこと）。`sync-hourly.yml` は `publish-live.yml` に統合して削除済みです。下表と `worker.js` の対応表は新構成に更新済みです。
+
 | Cron Trigger（UTC） | 日本時間 | 起動する workflow |
 |---|---|---|
-| `2,12,22,32,42,52 * * * *` | 10分ごと（毎時02分、12分…） | `publish-live.yml`：最新10分値のPages配信 |
-| `35 * * * *` | 毎時35分 | `sync-hourly.yml`：1時間値の年別アーカイブ更新 |
+| `17 * * * *` | 毎時17分 | `publish-live.yml`：川の防災情報の取得、Pages配信、1時間値の年別アーカイブ更新 |
 | `25 18 * * *` | 毎日03:25 | `archive.yml`：10分値の日別アーカイブ確定 |
 
 Cron Trigger の文字列は [`worker.js`](worker.js) の `WORKFLOW_BY_CRON` と完全に一致させてください。対応表に無い Cron で起動した場合、Worker は何も起動せずエラーを記録します。分だけを指定する Cron は日本時間でも同じ分に動きますが、日次の Cron は UTC で書くため、日本時間から9時間引いた時刻を指定します。

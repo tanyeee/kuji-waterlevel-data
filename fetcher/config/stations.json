@@ -43,6 +43,11 @@
       "river_id": "kuji",
       "river_name": "久慈川水系",
       "data_dir": "data/stations/tomioka-bashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "2"
+      },
       "hourly": {
         "station_id": "303011283322020"
       },
@@ -65,6 +70,11 @@
       "river_id": "kuji",
       "river_name": "久慈川水系",
       "data_dir": "data/stations/nukada",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "7"
+      },
       "hourly": {
         "station_id": "303011283322030"
       },
@@ -122,6 +132,11 @@
       "river_id": "kuji",
       "river_name": "久慈川水系",
       "data_dir": "data/stations/sakakibashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "4"
+      },
       "hourly": {
         "station_id": "303011283322050"
       },
@@ -143,6 +158,11 @@
       "river_id": "kuji",
       "river_name": "久慈川水系",
       "data_dir": "data/stations/kuji-ohashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "8"
+      },
       "hourly": {
         "station_id": "303011283322060"
       },
@@ -164,6 +184,11 @@
       "river_id": "kuji",
       "river_name": "久慈川水系",
       "data_dir": "data/stations/kihatsu",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "6"
+      },
       "hourly": {
         "station_id": "303011283322080"
       },
@@ -185,6 +210,11 @@
       "river_id": "kuji",
       "river_name": "久慈川水系",
       "data_dir": "data/stations/tsuneibashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "5"
+      },
       "hourly": {
         "station_id": "303011283322070"
       },
@@ -249,6 +279,11 @@
       "river_id": "hinuma-nakagawa",
       "river_name": "涸沼・那珂川水系",
       "data_dir": "data/stations/hinuma-bashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "19"
+      },
       "hourly": {
         "station_id": "303021283322110"
       },
@@ -264,6 +299,11 @@
       "river_id": "hinuma-nakagawa",
       "river_name": "涸沼・那珂川水系",
       "data_dir": "data/stations/minato-ohashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "18"
+      },
       "hourly": {
         "station_id": "303021283322010"
       },
@@ -279,6 +319,11 @@
       "river_id": "hinuma-nakagawa",
       "river_name": "涸沼・那珂川水系",
       "data_dir": "data/stations/suifu-bashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "13"
+      },
       "hourly": {
         "station_id": "303021283322020"
       },
@@ -294,6 +339,11 @@
       "river_id": "hinuma-nakagawa",
       "river_name": "涸沼・那珂川水系",
       "data_dir": "data/stations/kunita-ohashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "14"
+      },
       "hourly": {
         "station_id": "303021283322030"
       },
@@ -309,6 +359,11 @@
       "river_id": "hinuma-nakagawa",
       "river_name": "涸沼・那珂川水系",
       "data_dir": "data/stations/nakagawa-ohashi",
+      "kawabou": {
+        "ofc_cd": "21271",
+        "itmknd_cd": "4",
+        "obs_cd": "12"
+      },
       "hourly": {
         "station_id": "303021283322040"
       },

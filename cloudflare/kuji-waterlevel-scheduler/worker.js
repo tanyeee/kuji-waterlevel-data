@@ -10,8 +10,7 @@ const REF = 'main';
 
 // Keys must match the Worker's Cron Triggers exactly. Cron Triggers run in UTC.
 const WORKFLOW_BY_CRON = {
-  '2,12,22,32,42,52 * * * *': 'publish-live.yml', // every 10 minutes
-  '35 * * * *': 'sync-hourly.yml', // every hour at :35
+  '17 * * * *': 'publish-live.yml', // every hour at :17 (Kawabou fetch + live site + hourly archive)
   '25 18 * * *': 'archive.yml', // 03:25 JST every day
 };
 
