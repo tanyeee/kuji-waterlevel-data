@@ -1,15 +1,26 @@
 # 久慈川・那珂川水系 10分水位アーカイブ
 
-国土交通省の河川水位を取得し、[`kuji-waterlevel`](https://github.com/tanyeee/kuji-waterlevel)（茨城県河川水位ビューア）や tide-graph が使う最新値と長期アーカイブを、コンパクトなJSONとして配信・保存します。
+国土交通省「川の防災情報」(https://www.river.go.jp/kawabou/) の河川水位を取得し、[`kuji-waterlevel`](https://github.com/tanyeee/kuji-waterlevel)（茨城県河川水位ビューア）や tide-graph が使う最新値と長期アーカイブを、コンパクトなJSONとして配信・保存します。
 
 - `data/10min/YYYY/MM/YYYY-MM-DD.json`: 48時間の補正待ち後に確定する日別10分値。作成後は原則変更しません。
 - `data/hourly/STATION/YYYY.json`: 2016年以降の1時間値。10分アーカイブ開始前のフォールバックです。
 - 時刻はJSTです。値はm、欠測は `null` です。
 - 日別ファイルは全観測地点をまとめ、時刻を繰り返さず `stepMinutes` と配列位置で表現します。
 
-毎日03:25 JSTに10分値を確定します。1時間値は毎時35分に、11地点は国土交通省の時刻水位月表（前月・当月）から、榊橋上・高橋・下石崎の3地点は川の防災情報の公開JSONから、それぞれ直接取得して既存の年別ファイルへ統合します。取得スクリプトと地点設定は `fetcher/` にこのリポジトリのファイルとして保存しており（取得元は後述）、旧リポジトリのチェックアウトやGit履歴、大きな `historical_hourly.json` には依存しません。10分値は原本として保持し、30分・1時間などの集約は利用側で行います。
+## 取得元・取得頻度・作法（2026-11-05 以降）
 
-これらの定期実行（10分ごとの配信、毎時35分の1時間値同期、毎日03:25の日別確定）は、Cloudflare Worker の Cron Trigger がこのリポジトリの workflow を直接起動します。GitHub Actions の `schedule` は起動が不規則なため予備として残しているだけです。設定と確認方法は [`cloudflare/kuji-waterlevel-scheduler`](cloudflare/kuji-waterlevel-scheduler/README.md) を参照してください。
+取得元は国土交通省「川の防災情報」の公開JSON（`www.river.go.jp/kawabou/file/...`）だけです。水文水質データベース（www1.river.go.jp）は自動取得を拒否されたため、一切アクセスしません。
+
+- 取得は **1時間に1回**（`publish-live.yml`、毎時17分）。14地点すべての10分値（約8時間分）と1時間値（約50時間分）を `fetcher/scripts/update_recent_from_kawabou_files.py` で更新し、live配信の作成と1時間値の年別アーカイブ統合（`data/hourly/`）まで同じ workflow で行います。
+- 作法: User-Agent は `kuji-waterlevel-data/1.0 (+https://github.com/tanyeee/kuji-waterlevel-data)`、リクエスト間隔は1秒以上、1地点あたり通常1リクエスト（`tmlist/past` の追加取得は、直近データに欠落があるときだけ）。
+- 停止条件: 403/429 を受けたら残りの地点を取得せず、データを書き込まずに非ゼロ終了します。過半数の地点で失敗した場合も、書き込まずに非ゼロ終了します。
+- 欠測: `stgCcd` が0以外の値は欠測（`null`）として扱い、取り込みません。
+- `archive.yml`（毎日03:25 JST、10分値の日別確定）は公開済みのPages配信（上記の取得結果）だけを読むため、www1 には依存せず有効化できます。
+- 10分値は川の防災情報の保持が約8時間のため、毎時の取得で連続して保存します。取得が8時間を超えて止まると10分値に欠落が生じます。
+- `scripts/backfill_10min_history.py`、`fetcher/scripts/update_recent_10min_from_kawabou.py`、`fetcher/scripts/update_recent_from_monthly_page.py` は www1 を使うため、workflow からは呼びません（ファイルは履歴として残してあります）。再開する場合は取得元の許諾を確認してください。
+- Cloudflare の Cron Trigger は現在停止中です（[`cloudflare/kuji-waterlevel-scheduler`](cloudflare/kuji-waterlevel-scheduler/README.md) 参照）。`sync-hourly.yml` は `publish-live.yml` に統合して削除しました。
+
+以下は過去の経緯の記録で、10分ごとの配信・11地点の月表取得などの記述は現在の運用ではありません。
 
 アーカイブ対象は14地点です。毎時履歴は富岡橋、幸久橋、榊橋、久慈大橋、機初、常井橋、涸沼橋、湊大橋、水府橋、国田大橋、那珂川大橋の11地点で2016年から収録し、榊橋上、高橋、下石崎は保有記録のある2026年分を収録します。榊橋上・高橋・下石崎は時刻水位月表の対象外のため、川の防災情報から1時間値を継続取得しています。年別の収録範囲は `data/manifest.json` の `hourlyYears` を参照してください。日別10分ファイルは作成時点の対象地点を保持するため、対象拡大前のファイルには6地点分のみが含まれます。
 
