@@ -18,7 +18,7 @@
 - `archive.yml`（毎日03:25 JST、10分値の日別確定）は公開済みのPages配信（上記の取得結果）だけを読むため、www1 には依存せず有効化できます。
 - 10分値は川の防災情報の保持が約8時間のため、毎時の取得で連続して保存します。取得が8時間を超えて止まると10分値に欠落が生じます。
 - `scripts/backfill_10min_history.py`、`fetcher/scripts/update_recent_10min_from_kawabou.py`、`fetcher/scripts/update_recent_from_monthly_page.py` は www1 を使うため、workflow からは呼びません（ファイルは履歴として残してあります）。再開する場合は取得元の許諾を確認してください。
-- Cloudflare の Cron Trigger は現在停止中です（[`cloudflare/kuji-waterlevel-scheduler`](cloudflare/kuji-waterlevel-scheduler/README.md) 参照）。`sync-hourly.yml` は `publish-live.yml` に統合して削除しました。
+- 定期起動は Cloudflare Worker の Cron Trigger（毎時17分の `publish-live.yml`、毎日03:25 JST の `archive.yml`）だけで行い、GitHub Actions の `schedule` は使いません（[`cloudflare/kuji-waterlevel-scheduler`](cloudflare/kuji-waterlevel-scheduler/README.md) 参照）。Cron が止まれば更新も止まります。`sync-hourly.yml` は `publish-live.yml` に統合して削除しました。
 
 以下は過去の経緯の記録で、10分ごとの配信・11地点の月表取得などの記述は現在の運用ではありません。
 

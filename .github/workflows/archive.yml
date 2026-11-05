@@ -2,8 +2,8 @@ name: Archive river water levels
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "25 18 * * *"
+  # 定期起動は Cloudflare Worker(kuji-waterlevel-scheduler)の Cron "25 18 * * *" から workflow_dispatch で行う。
+  # GitHub の schedule は起動が不規則なため使わない(Cloudflare が止まれば更新も止まる)。
 
 permissions:
   contents: write
