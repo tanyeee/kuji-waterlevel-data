@@ -1,6 +1,6 @@
 # kuji-waterlevel-scheduler（Cloudflare Worker）
 
-Cloudflare の Cron Trigger から、このリポジトリの GitHub Actions を `workflow_dispatch` で起動する Worker です。GitHub Actions の `schedule` はこのプロジェクトでは起動が不規則なため主系にせず、各 workflow に予備として残しています。
+Cloudflare の Cron Trigger から、このリポジトリの GitHub Actions を `workflow_dispatch` で起動する Worker です。GitHub Actions の `schedule` はこのプロジェクトでは起動が不規則なため使っていません。定期起動はこの Worker だけで、Worker の Cron が止まれば更新も止まります。
 
 ## Cron Trigger と起動する workflow
 

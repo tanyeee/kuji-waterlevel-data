@@ -7,8 +7,8 @@ on:
         description: "Only for first deployment before the live Pages files exist"
         type: boolean
         default: false
-  schedule:
-    - cron: "17 * * * *"
+  # 定期起動は Cloudflare Worker(kuji-waterlevel-scheduler)の Cron "17 * * * *" から workflow_dispatch で行う。
+  # GitHub の schedule は起動が不規則なため使わない(Cloudflare が止まれば更新も止まる)。
 
 permissions:
   contents: write
